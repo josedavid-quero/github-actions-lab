@@ -1,0 +1,23 @@
+name: Cypress E2E workflow
+
+on:
+  workflow dispatch:
+
+jobs:
+  e2eTests:
+    runs-on: ubuntu-latest
+  
+  steps:
+    - name: Checkout
+      uses: actions/checkout@v6
+    - name: Run needed containers
+      run: |
+        docker run -d -p 3001:3000 hangman-api
+        docker run -d -p 8080:8080 -e API_URL=http://localhost:3001 hangman-front
+    - name: Instal dependencies
+      run: npm ci
+      working-directory: ./hangman-e2e/e2e
+    - name: Execute e2e e2eTests
+      uses: cypress-io/github-action@v7
+      with:
+        working-directory: ./hangman-e2e/e2e
